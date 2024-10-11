@@ -114,13 +114,16 @@ class Main:
       self.dirs = [self.type]
 
     for d in self.dirs:
+      paths = [os.path.join(d, it) for it in os.listdir(d) if it.endswith(d)]
+      paths.sort(key=lambda f: os.path.getmtime(f), reverse=True)
+      print(paths)
       sites = ""
-      for key in self.paths:
-        with open(f'{d}/{key}.{d}', mode="r", encoding="utf-8") as f:
+      for p in paths:
+        with open(p, mode="r", encoding="utf-8") as f:
           sites += (f.read().strip() + '\n')
-      encoded = base64.b64encode(sites.encode('utf-8')).decode('utf-8')
       with open(f"{d}/index", mode="w+", encoding="utf-8") as f:
         f.write(sites)
+      encoded = base64.b64encode(sites.encode('utf-8')).decode('utf-8')
       with open(f"{d}/base64", mode="w+", encoding="utf-8") as f:
         f.write(encoded)
 
